@@ -16,13 +16,35 @@ const ReportPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/reports`, {
-        headers: {
-          'Authorization': `Bearer ${keycloak.token}`
-        }
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/reports`, {
+        credentials: "include"
       });
+      console.log(response);
 
-      
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const downloadUsers = async () => {
+    if (!keycloak?.token) {
+      setError('Not authenticated');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users`, {
+        credentials: "include"
+      });
+      console.log(response);
+
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -50,8 +72,8 @@ const ReportPage: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="p-8 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-6">Usage Reports</h1>
-        
+        <h1 className="text-2xl font-bold mb-6">Usage Reports and Users</h1>
+
         <button
           onClick={downloadReport}
           disabled={loading}
@@ -59,7 +81,17 @@ const ReportPage: React.FC = () => {
             loading ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
-          {loading ? 'Generating Report...' : 'Download Report'}
+          {loading ? 'Loading...' : 'Download Reports'}
+        </button>
+
+        <button
+          onClick={downloadUsers}
+          disabled={loading}
+          className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${
+            loading ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+        >
+          {loading ? 'Loading...' : 'Download Users'}
         </button>
 
         {error && (

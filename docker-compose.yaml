@@ -11,6 +11,8 @@ services:
       - ./postgres-keycloak-data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
+    networks:
+      - keycloak_net
   keycloak:
     image: quay.io/keycloak/keycloak:21.1
     environment:
@@ -20,15 +22,18 @@ services:
       KC_DB_URL: jdbc:postgresql://keycloak_db:5432/keycloak_db
       KC_DB_USERNAME: keycloak_user
       KC_DB_PASSWORD: keycloak_password
-    command: 
+    command:
       - start-dev
       - --import-realm
     volumes:
       - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+      - ./keycloak/no_ssl_enable.sh:/opt/keycloak/conf/no_ssl_enable.sh
     ports:
       - "8080:8080"
     depends_on:
       - keycloak_db
+    networks:
+      - keycloak_net
   frontend:
     build:
       context: ./frontend
@@ -40,3 +45,26 @@ services:
       REACT_APP_KEYCLOAK_URL: http://localhost:8080
       REACT_APP_KEYCLOAK_REALM: reports-realm
       REACT_APP_KEYCLOAK_CLIENT_ID: reports-frontend
+    networks:
+      - keycloak_net
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      BASE_URL: http://localhost:8000
+      KEYCLOAK_BASE_URL: http://keycloak:8080
+      KEYCLOAK_REALM: reports-realm
+      KEYCLOAK_CLIENT_ID: reports-api
+      KEYCLOAK_CLIENT_SECRET: oNwoLQdvJAvRcL89SydqCWCe5ry1jMgq
+      KEYCLOAK_ADMIN_ROLE: administrator
+      KEYCLOAK_PROTHETIC_USER_ROLE: prothetic_user
+    volumes:
+      - ./backend-data:/opt/app/backend-data
+    networks:
+      - keycloak_net
+
+networks:
+  keycloak_net:
