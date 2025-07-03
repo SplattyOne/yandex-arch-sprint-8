@@ -6,7 +6,7 @@ from alembic.config import Config
 from alembic import command
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from keycloak import KeycloakOpenID
 from loguru import logger
 
@@ -77,4 +77,7 @@ async def auth_exception_handler(request: Request, exc: HTTPException):
             f"&scope=openid"
             f"&redirect_uri={settings.redirect_uri}"
         )
-    raise exc
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail}
+    )

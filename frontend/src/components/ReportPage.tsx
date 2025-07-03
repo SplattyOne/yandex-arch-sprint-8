@@ -77,21 +77,21 @@ const ReportPage: React.FC = () => {
         <button
           onClick={downloadReport}
           disabled={loading}
-          className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${
+          className={`px-4 py-2 mr-1 bg-blue-500 text-white rounded hover:bg-blue-600 ${
             loading ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
-          {loading ? 'Loading...' : 'Download Reports'}
+          {loading ? 'Loading...' : 'Download Reports (only for prothetic)'}
         </button>
 
         <button
           onClick={downloadUsers}
           disabled={loading}
-          className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${
+          className={`px-4 py-2 ml-1 bg-blue-500 text-white rounded hover:bg-blue-600 ${
             loading ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
-          {loading ? 'Loading...' : 'Download Users'}
+          {loading ? 'Loading...' : 'Download Users (only for admin)'}
         </button>
 
         {error && (
